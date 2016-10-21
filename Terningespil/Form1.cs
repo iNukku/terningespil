@@ -21,9 +21,7 @@ namespace Terningespil
         int[] resultarray = new int[5];
         bool[] diceIsChosen = new bool[] { false, false, false, false, false };
 
-        player playerOne = new player();
-        player playerTwo = new player();    
-
+        //Constructor
         public Form1()
         {
             InitializeComponent();
@@ -34,6 +32,8 @@ namespace Terningespil
             chosen_dice_lbl_5.Visible = false;
             label2.Visible = false;
 
+            player playerOne = new player();
+            player playerTwo = new player();
             playerOne.name = "Player One";
             playerTwo.name = "Player Two";
 
