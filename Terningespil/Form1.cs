@@ -14,22 +14,29 @@ namespace Terningespil
     public partial class Form1 : Form
     {
         Random rng = new Random();
+        const int max_rounds = 3;
         bool checkBoxesAreHidden = true;
         int[] thrownDices = new int[5];
-        int numberOfTries = 0;
-        //resultarray skal høre til den enkelte player-class, men den skal først laves!
+        int numberOfTries = 1;
         int[] resultarray = new int[5];
         bool[] diceIsChosen = new bool[] { false, false, false, false, false };
+        CheckBox[] the_check_boxes;
+        Label[] diceLabels;
+        Label[] chosendiesLabels;
 
         //Constructor
         public Form1()
         {
             InitializeComponent();
-            chosen_dice_lbl_1.Visible = false;
-            chosen_dice_lbl_2.Visible = false;
-            chosen_dice_lbl_3.Visible = false;
-            chosen_dice_lbl_4.Visible = false;
-            chosen_dice_lbl_5.Visible = false;
+
+            the_check_boxes = new CheckBox[] {
+                checkBox1, checkBox2, checkBox3, checkBox4, checkBox5 };
+            diceLabels = new Label[] {
+                dice_lbl_1, dice_lbl_2, dice_lbl_3, dice_lbl_4, dice_lbl_5 };
+            chosendiesLabels = new Label[] {
+                chosen_dice_lbl_1, chosen_dice_lbl_2, chosen_dice_lbl_3, chosen_dice_lbl_4, chosen_dice_lbl_5 };
+
+            hideSecondaryLabels(chosendiesLabels);
             label2.Visible = false;
 
             player playerOne = new player();
@@ -37,21 +44,21 @@ namespace Terningespil
             playerOne.name = "Player One";
             playerTwo.name = "Player Two";
 
-            hideCheckboxes();
+            hideCheckboxes(the_check_boxes);
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if (numberOfTries < 2)
+            if (numberOfTries < max_rounds)
             {
-                checkCheckboxMarks();
-                setSecondaryLabels();
+                checkCheckboxMarks(the_check_boxes);
+                setSecondaryLabels(chosendiesLabels, resultarray);
                 rollDice();
-                setPrimaryDiceLabels();
+                setPrimaryDiceLabels(diceLabels);
 
                 if (checkBoxesAreHidden)
                 {
-                    showCheckboxes();
+                    showCheckboxes(the_check_boxes);
                     label2.Visible = true;
                 }      
                           
@@ -59,10 +66,11 @@ namespace Terningespil
             }
             else
             {
-                checkCheckboxMarks();
+                checkCheckboxMarks(the_check_boxes);
+                rollDice();
+                setPrimaryDiceLabels(diceLabels);
                 updateResultarray();
-                //Problem: Secondarylabels sættes ikke
-                setSecondaryLabels();
+                setSecondaryLabels(chosendiesLabels, resultarray);
                 endRound();
             }
         }
@@ -85,45 +93,44 @@ namespace Terningespil
         }
 
         /// <summary>
-        /// returnerer billede af terning svarende til den parsede værdi
+        /// returnerer billede af terning svarende til den indsatte værdi
         /// </summary>
         /// <param name="theRoll"></param>
         /// <returns></returns>
         /// 
 
-        private void setPrimaryDiceLabels()
+        private void setPrimaryDiceLabels(Label[] labelarray)
         {
-            dice_lbl_1.Image = findImage(thrownDices[0]);
-            dice_lbl_2.Image = findImage(thrownDices[1]);
-            dice_lbl_3.Image = findImage(thrownDices[2]);
-            dice_lbl_4.Image = findImage(thrownDices[3]);
-            dice_lbl_5.Image = findImage(thrownDices[4]);
+            for (int i = 0; i < labelarray.Length; i++)
+            {
+                labelarray[i].Image = findImage(thrownDices[i]);
+            }
         }
 
-        private void setSecondaryLabels()
+        private void setSecondaryLabels(Label[] labelarray, int[] arrayOfResults)
         {
-            if (resultarray[0] != 0)
+            for (int i = 0; i < labelarray.Length; i++)
             {
-                chosen_dice_lbl_1.Image = findImage(resultarray[0]);
+                if (arrayOfResults[i] != 0)
+                {
+                    labelarray[i].Image = findImage(arrayOfResults[i]);
+                }
             }
-            if (resultarray[1] != 0)
+        }
+
+        private void hideSecondaryLabels(Label[] labelarray)
+        {
+            foreach (Label label in labelarray)
             {
-                chosen_dice_lbl_2.Image = findImage(resultarray[1]);
-            }
-            if (resultarray[2] != 0)
-            {
-                chosen_dice_lbl_3.Image = findImage(resultarray[2]);
-            }
-            if (resultarray[3] != 0)
-            {
-                chosen_dice_lbl_4.Image = findImage(resultarray[3]);
-            }
-            if (resultarray[4] != 0)
-            {
-                chosen_dice_lbl_5.Image = findImage(resultarray[4]);
+                label.Visible = false;
             }
         }
         
+        /// <summary>
+        /// Returnerer billede, der passer til terningeværdi
+        /// </summary>
+        /// <param name="theRoll"></param>
+        /// <returns></returns>
         private Image findImage(int theRoll)
         {
             Image dicePic = Properties.Resources.dice_blank;
@@ -162,6 +169,7 @@ namespace Terningespil
         private bool checkboxIsVisible()
         {
             bool isTrue = false;
+
             if (checkBox1.Visible && checkBox2.Visible && checkBox3.Visible && checkBox4.Visible && checkBox5.Visible)
             {
                 isTrue = true;
@@ -171,44 +179,41 @@ namespace Terningespil
         /// <summary>
         /// sætter alle checkbokse til synlig
         /// </summary>
-        private void showCheckboxes()
+        private void showCheckboxes(CheckBox[] checkboxArray)
         {
-            checkBox1.Visible = true;
-            checkBox2.Visible = true;
-            checkBox3.Visible = true;
-            checkBox4.Visible = true;
-            checkBox5.Visible = true;
-
+            foreach (CheckBox checkbox in checkboxArray)
+            {
+                checkbox.Visible = true;
+            }
             checkBoxesAreHidden = false;
         }
         /// <summary>
         /// Skjuler alle checkbokse
         /// </summary>
-        private void hideCheckboxes()
+        private void hideCheckboxes(CheckBox[] checkboxarray)
         {
-            checkBox1.Visible = false;
-            checkBox2.Visible = false;
-            checkBox3.Visible = false;
-            checkBox4.Visible = false;
-            checkBox5.Visible = false;
-
+            foreach (CheckBox checkbox in checkboxarray)
+            {
+                checkbox.Visible = false;
+            }
             checkBoxesAreHidden = true;
         }
 
+        private void setLabelImagesToBlank(Label[] labelarray)
+        {
+            foreach (Label label in labelarray)
+            {
+                label.Image = Properties.Resources.dice_blank;
+            }
+        }
         /// <summary>
         /// sætter antal forsøg til 0, skjuler tjekbokse og nulstiller terningerne i formen
         /// </summary>
         private void resetTable()
         {
-            hideCheckboxes();
+            hideCheckboxes(the_check_boxes);
+            numberOfTries = 1;
             label2.Visible = false;
-            numberOfTries = 0;
-
-            dice_lbl_1.Image = Properties.Resources.dice_blank;
-            dice_lbl_2.Image = Properties.Resources.dice_blank;
-            dice_lbl_3.Image = Properties.Resources.dice_blank;
-            dice_lbl_4.Image = Properties.Resources.dice_blank;
-            dice_lbl_5.Image = Properties.Resources.dice_blank;
 
             for (int i = 0; i < diceIsChosen.Length; i++)
             {
@@ -230,60 +235,27 @@ namespace Terningespil
         /// <summary>
         /// Checker hvilke terninger spilleren vælger at gemme, og gemmer dem i resultarray
         /// </summary>
-        private void checkCheckboxMarks()
+        private void checkCheckboxMarks(CheckBox[] checkboxarray)
         {
-            if (checkBox1.Checked)
+            for (int i = 0; i < checkboxarray.Length; i++)
             {
-                resultarray[0] = thrownDices[0];
-                chosen_dice_lbl_1.Visible = true;
-                checkBox1.Visible = false;
-                dice_lbl_1.Visible = false;
-                diceIsChosen[0] = true;
-                checkBox1.Checked = false;
-            }
-            if (checkBox2.Checked)
-            {
-                resultarray[1] = thrownDices[1];
-                chosen_dice_lbl_2.Visible = true;
-                checkBox2.Visible = false;
-                dice_lbl_2.Visible = false;
-                diceIsChosen[1] = true;
-                checkBox2.Checked = false;
-            }
-            if (checkBox3.Checked)
-            {
-                resultarray[2] = thrownDices[2];
-                chosen_dice_lbl_3.Visible = true;
-                checkBox3.Visible = false;
-                dice_lbl_3.Visible = false;
-                diceIsChosen[2] = true;
-                checkBox3.Checked = false;
-            }
-            if (checkBox4.Checked)
-            {
-                resultarray[3] = thrownDices[3];
-                chosen_dice_lbl_4.Visible = true;
-                checkBox4.Visible = false;
-                dice_lbl_4.Visible = false;
-                diceIsChosen[3] = true;
-                checkBox4.Checked = false;
-            }
-            if (checkBox5.Checked)
-            {
-                resultarray[4] = thrownDices[4];
-                chosen_dice_lbl_5.Visible = true;
-                checkBox5.Visible = false;
-                dice_lbl_5.Visible = false;
-                diceIsChosen[4] = true;
-                checkBox5.Checked = false;
+                if (checkboxarray[i].Checked)
+                {
+                    resultarray[i] = thrownDices[i];
+                    chosendiesLabels[i].Visible = true;
+                    checkboxarray[i].Visible = false;
+                    diceLabels[i].Visible = false;
+                    diceIsChosen[i] = true;
+                    checkboxarray[i].Checked = false;
+                }
             }
         }
 
         private void endRound()
         {
             button1.Enabled = false;
-            hideCheckboxes();
-            setSecondaryLabels();
+            hideCheckboxes(the_check_boxes);
+            setSecondaryLabels(chosendiesLabels, resultarray);
             MessageBox.Show("Your score was : " + resultarray.Sum().ToString());
         }
 
@@ -294,10 +266,14 @@ namespace Terningespil
         public string name;
         public int score = 0;
         public bool hasTurn; 
-
     }
 
     public class Game
+    {
+
+    }
+
+    public class Dices
     {
 
     }
