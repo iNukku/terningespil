@@ -267,6 +267,13 @@ namespace Terningespil
             }
         }
 
+        private void resetArray(int[] intarray)
+        {
+            for (int i = 0; i < intarray.Length; i++)
+            {
+                intarray[i] = 0;
+            }
+        }
         /// <summary>
         /// Afslutter runden
         /// </summary>
@@ -277,6 +284,8 @@ namespace Terningespil
             hideCheckboxes(the_check_boxes);
             setSecondaryLabels(chosendiesLabels, resultarray);
             MessageBox.Show("Your score was : " + resultarray.Sum().ToString());
+            resetArray(resultarray);
+            resetArray(thrownDices);
         }
 
         /// <summary>
