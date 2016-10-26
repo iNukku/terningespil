@@ -14,11 +14,12 @@ namespace Terningespil
     public partial class Form1 : Form
     {
         Random rng = new Random();
-        const int max_rounds = 3;
+        const int MAX_ROUNDS = 3;
         bool checkBoxesAreHidden = true;
         int[] thrownDices = new int[5];
         int numberOfTries = 1;
         int[] resultarray = new int[5];
+        int totalScore = 0;
         bool[] diceIsChosen = new bool[] { false, false, false, false, false };
         CheckBox[] the_check_boxes;
         Label[] diceLabels;
@@ -35,30 +36,31 @@ namespace Terningespil
                 dice_lbl_1, dice_lbl_2, dice_lbl_3, dice_lbl_4, dice_lbl_5 };
             chosendiesLabels = new Label[] {
                 chosen_dice_lbl_1, chosen_dice_lbl_2, chosen_dice_lbl_3, chosen_dice_lbl_4, chosen_dice_lbl_5 };
-
-            hideSecondaryLabels(chosendiesLabels);
-            label2.Visible = false;
+            
+            resetTable();
 
             player playerOne = new player();
             player playerTwo = new player();
             playerOne.name = "Player One";
             playerTwo.name = "Player Two";
+            playerOne.hasTurn = true;
+            playerTwo.hasTurn = false;
+            totalScore = playerOne.score;
 
-            hideCheckboxes(the_check_boxes);
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if (numberOfTries < max_rounds)
+            if (numberOfTries < MAX_ROUNDS)
             {
-                checkCheckboxMarks(the_check_boxes);
+                setChosenDices(the_check_boxes);
                 setSecondaryLabels(chosendiesLabels, resultarray);
                 rollDice();
                 setPrimaryDiceLabels(diceLabels);
 
                 if (checkBoxesAreHidden)
                 {
-                    showCheckboxes(the_check_boxes);
+                    showAllCheckboxes(the_check_boxes);
                     label2.Visible = true;
                 }      
                           
@@ -66,7 +68,7 @@ namespace Terningespil
             }
             else
             {
-                checkCheckboxMarks(the_check_boxes);
+                setChosenDices(the_check_boxes);
                 rollDice();
                 setPrimaryDiceLabels(diceLabels);
                 updateResultarray();
@@ -74,6 +76,12 @@ namespace Terningespil
                 endRound();
             }
         }
+
+        private void nextRoundButton_Click(object sender, EventArgs e)
+        {
+            resetTable();
+        }
+
         /// <summary>
         /// fylder thrownDices-array med tilfældige terningekast
         /// </summary>
@@ -93,7 +101,7 @@ namespace Terningespil
         }
 
         /// <summary>
-        /// returnerer billede af terning svarende til den indsatte værdi
+        /// kalder findImage-metoden og indsætter de returnerede billeder i de relevante terningelabels
         /// </summary>
         /// <param name="theRoll"></param>
         /// <returns></returns>
@@ -104,6 +112,22 @@ namespace Terningespil
             for (int i = 0; i < labelarray.Length; i++)
             {
                 labelarray[i].Image = findImage(thrownDices[i]);
+            }
+        }
+
+        private void displayPrimaryLabels(Label[] labelarray)
+        {
+            foreach (Label label in labelarray)
+            {
+                label.Visible = true;
+            }
+        }
+
+        private void setPrimaryLabelsToBlank(Label[] labelarray)
+        {
+            foreach (Label label in labelarray)
+            {
+                label.Image = Properties.Resources.dice_blank;
             }
         }
 
@@ -125,7 +149,7 @@ namespace Terningespil
                 label.Visible = false;
             }
         }
-        
+                
         /// <summary>
         /// Returnerer billede, der passer til terningeværdi
         /// </summary>
@@ -133,7 +157,7 @@ namespace Terningespil
         /// <returns></returns>
         private Image findImage(int theRoll)
         {
-            Image dicePic = Properties.Resources.dice_blank;
+            Image dicePic;
 
             switch (theRoll)
             {
@@ -176,10 +200,11 @@ namespace Terningespil
             }
             return isTrue;
         }
+
         /// <summary>
         /// sætter alle checkbokse til synlig
         /// </summary>
-        private void showCheckboxes(CheckBox[] checkboxArray)
+        private void showAllCheckboxes(CheckBox[] checkboxArray)
         {
             foreach (CheckBox checkbox in checkboxArray)
             {
@@ -187,10 +212,8 @@ namespace Terningespil
             }
             checkBoxesAreHidden = false;
         }
-        /// <summary>
-        /// Skjuler alle checkbokse
-        /// </summary>
-        private void hideCheckboxes(CheckBox[] checkboxarray)
+
+        private void hideAllCheckboxes(CheckBox[] checkboxarray)
         {
             foreach (CheckBox checkbox in checkboxarray)
             {
@@ -206,20 +229,13 @@ namespace Terningespil
                 label.Image = Properties.Resources.dice_blank;
             }
         }
-        /// <summary>
-        /// sætter antal forsøg til 0, skjuler tjekbokse og nulstiller terningerne i formen
-        /// </summary>
-        private void resetTable()
-        {
-            hideCheckboxes(the_check_boxes);
-            numberOfTries = 1;
-            label2.Visible = false;
 
+        private void setDiceIsChosenToFalse()
+        {
             for (int i = 0; i < diceIsChosen.Length; i++)
             {
                 diceIsChosen[i] = false;
             }
-
         }
 
         private void updateResultarray()
@@ -232,10 +248,11 @@ namespace Terningespil
                 }
             }
         }
+
         /// <summary>
         /// Checker hvilke terninger spilleren vælger at gemme, og gemmer dem i resultarray
         /// </summary>
-        private void checkCheckboxMarks(CheckBox[] checkboxarray)
+        private void setChosenDices(CheckBox[] checkboxarray)
         {
             for (int i = 0; i < checkboxarray.Length; i++)
             {
@@ -251,12 +268,41 @@ namespace Terningespil
             }
         }
 
+        private void resetArray(int[] intarray)
+        {
+            for (int i = 0; i < intarray.Length; i++)
+            {
+                intarray[i] = 0;
+            }
+        }
+        /// <summary>
+        /// Afslutter runden
+        /// </summary>
         private void endRound()
         {
             button1.Enabled = false;
-            hideCheckboxes(the_check_boxes);
+            nextRoundButton.Visible = true;
+            hideAllCheckboxes(the_check_boxes);
             setSecondaryLabels(chosendiesLabels, resultarray);
-            MessageBox.Show("Your score was : " + resultarray.Sum().ToString());
+            MessageBox.Show("Your score was : " + resultarray.Sum().ToString(), "Resultat");
+            resetArray(resultarray);
+            resetArray(thrownDices);
+        }
+
+        /// <summary>
+        /// resetter spillet
+        /// </summary>
+        private void resetTable()
+        {
+            displayPrimaryLabels(diceLabels);
+            hideAllCheckboxes(the_check_boxes);
+            hideSecondaryLabels(chosendiesLabels);
+            setPrimaryLabelsToBlank(diceLabels);
+            button1.Enabled = true;
+            numberOfTries = 1;
+            label2.Visible = false;
+            nextRoundButton.Visible = false;
+            setDiceIsChosenToFalse();
         }
 
     }
@@ -270,7 +316,7 @@ namespace Terningespil
 
     public class Game
     {
-
+        private Dictionary<String, int> hands;
     }
 
     public class Dices

@@ -46,6 +46,7 @@
             this.checkBox3 = new System.Windows.Forms.CheckBox();
             this.checkBox4 = new System.Windows.Forms.CheckBox();
             this.checkBox5 = new System.Windows.Forms.CheckBox();
+            this.nextRoundButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // dice_lbl_1
@@ -209,11 +210,23 @@
             this.checkBox5.Text = "5";
             this.checkBox5.UseVisualStyleBackColor = true;
             // 
+            // nextRoundButton
+            // 
+            this.nextRoundButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.nextRoundButton.Location = new System.Drawing.Point(314, 435);
+            this.nextRoundButton.Name = "nextRoundButton";
+            this.nextRoundButton.Size = new System.Drawing.Size(162, 86);
+            this.nextRoundButton.TabIndex = 18;
+            this.nextRoundButton.Text = "Næste runde";
+            this.nextRoundButton.UseVisualStyleBackColor = true;
+            this.nextRoundButton.Click += new System.EventHandler(this.nextRoundButton_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(778, 744);
+            this.Controls.Add(this.nextRoundButton);
             this.Controls.Add(this.checkBox5);
             this.Controls.Add(this.checkBox4);
             this.Controls.Add(this.checkBox3);
@@ -261,6 +274,7 @@
         private System.Windows.Forms.CheckBox checkBox3;
         private System.Windows.Forms.CheckBox checkBox4;
         private System.Windows.Forms.CheckBox checkBox5;
+        private System.Windows.Forms.Button nextRoundButton;
     }
 }
 
