@@ -14,11 +14,12 @@ namespace Terningespil
     public partial class Form1 : Form
     {
         Random rng = new Random();
-        const int max_rounds = 3;
+        const int MAX_ROUNDS = 3;
         bool checkBoxesAreHidden = true;
         int[] thrownDices = new int[5];
         int numberOfTries = 1;
         int[] resultarray = new int[5];
+        int totalScore = 0;
         bool[] diceIsChosen = new bool[] { false, false, false, false, false };
         CheckBox[] the_check_boxes;
         Label[] diceLabels;
@@ -42,21 +43,24 @@ namespace Terningespil
             player playerTwo = new player();
             playerOne.name = "Player One";
             playerTwo.name = "Player Two";
+            playerOne.hasTurn = true;
+            playerTwo.hasTurn = false;
+            totalScore = playerOne.score;
 
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if (numberOfTries < max_rounds)
+            if (numberOfTries < MAX_ROUNDS)
             {
-                checkCheckboxMarks(the_check_boxes);
+                setChosenDices(the_check_boxes);
                 setSecondaryLabels(chosendiesLabels, resultarray);
                 rollDice();
                 setPrimaryDiceLabels(diceLabels);
 
                 if (checkBoxesAreHidden)
                 {
-                    showCheckboxes(the_check_boxes);
+                    showAllCheckboxes(the_check_boxes);
                     label2.Visible = true;
                 }      
                           
@@ -64,7 +68,7 @@ namespace Terningespil
             }
             else
             {
-                checkCheckboxMarks(the_check_boxes);
+                setChosenDices(the_check_boxes);
                 rollDice();
                 setPrimaryDiceLabels(diceLabels);
                 updateResultarray();
@@ -97,7 +101,7 @@ namespace Terningespil
         }
 
         /// <summary>
-        /// returnerer billede af terning svarende til den indsatte værdi
+        /// kalder findImage-metoden og indsætter de returnerede billeder i de relevante terningelabels
         /// </summary>
         /// <param name="theRoll"></param>
         /// <returns></returns>
@@ -200,7 +204,7 @@ namespace Terningespil
         /// <summary>
         /// sætter alle checkbokse til synlig
         /// </summary>
-        private void showCheckboxes(CheckBox[] checkboxArray)
+        private void showAllCheckboxes(CheckBox[] checkboxArray)
         {
             foreach (CheckBox checkbox in checkboxArray)
             {
@@ -209,10 +213,7 @@ namespace Terningespil
             checkBoxesAreHidden = false;
         }
 
-        /// <summary>
-        /// Skjuler alle checkbokse
-        /// </summary>
-        private void hideCheckboxes(CheckBox[] checkboxarray)
+        private void hideAllCheckboxes(CheckBox[] checkboxarray)
         {
             foreach (CheckBox checkbox in checkboxarray)
             {
@@ -251,7 +252,7 @@ namespace Terningespil
         /// <summary>
         /// Checker hvilke terninger spilleren vælger at gemme, og gemmer dem i resultarray
         /// </summary>
-        private void checkCheckboxMarks(CheckBox[] checkboxarray)
+        private void setChosenDices(CheckBox[] checkboxarray)
         {
             for (int i = 0; i < checkboxarray.Length; i++)
             {
@@ -281,9 +282,9 @@ namespace Terningespil
         {
             button1.Enabled = false;
             nextRoundButton.Visible = true;
-            hideCheckboxes(the_check_boxes);
+            hideAllCheckboxes(the_check_boxes);
             setSecondaryLabels(chosendiesLabels, resultarray);
-            MessageBox.Show("Your score was : " + resultarray.Sum().ToString());
+            MessageBox.Show("Your score was : " + resultarray.Sum().ToString(), "Resultat");
             resetArray(resultarray);
             resetArray(thrownDices);
         }
@@ -294,7 +295,7 @@ namespace Terningespil
         private void resetTable()
         {
             displayPrimaryLabels(diceLabels);
-            hideCheckboxes(the_check_boxes);
+            hideAllCheckboxes(the_check_boxes);
             hideSecondaryLabels(chosendiesLabels);
             setPrimaryLabelsToBlank(diceLabels);
             button1.Enabled = true;
